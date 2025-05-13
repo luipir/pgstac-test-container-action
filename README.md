@@ -47,7 +47,7 @@ This composite GitHub Action provides a simple way to run a [pgstac](https://git
 
 ```text
 .github/
-  actions/
+  workflows/
     pgstac-action/
       pgstac-action.yml
 tests/
