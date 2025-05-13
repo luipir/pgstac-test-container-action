@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-DSN="postgresql://postgres:${PGPASSWORD:-postgres}@localhost:5432/postgis"
+DSN="postgresql://postgres:${PGPASSWORD:-postgres}@127.0.0.1:5439/postgis"
 BASE_DATA_DIR="${1:-testdata}"
 
-echo "Migrating pgstac database..."
-pypgstac migrate --dsn "$DSN"
+# echo "Migrating pgstac database..."
+# pypgstac migrate --dsn "$DSN"
 
 for DIR in "$BASE_DATA_DIR"/*/; do
   echo "Importing testdata from: $DIR"
