@@ -17,6 +17,14 @@ jobs:
       - name: Pull pgstac Docker image
         run: docker pull stacutils/pgstac:v0.9.2
 
+      - name: Docker login
+        if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          echo "${DOCKERHUB_TOKEN}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+      
       - name: Start pgstac server
         run: |
           docker run -d \
