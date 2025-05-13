@@ -16,7 +16,7 @@ for DIR in "$BASE_DATA_DIR"/*/; do
   for f in "$DIR"*.json; do
     if grep -q '"type": *"Catalog"' "$f"; then
       docker run --rm --network host -v "$PWD/$BASE_DATA_DIR":/data stacutils/pgstac:v0.9.2 \
-        pypgstac load catalogs "/data/$(basename "$DIR")/$(basename "$f")" --dsn "$DSN" --method upsert
+        pypgstac load collections "/data/$(basename "$DIR")/$(basename "$f")" --dsn "$DSN" --method upsert
     fi
   done
 
