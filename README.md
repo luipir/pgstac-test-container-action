@@ -1,10 +1,10 @@
-# pgstac GitHub Composite Action
+# pgstac GitHub Action
 
-This composite GitHub Action provides a simple way to run a [pgstac](https://github.com/stac-utils/pgstac) server (with [pypgstac](https://github.com/stac-utils/pgstac/tree/main/pypgstac)) in a Docker container and load STAC data into it as part of your CI/CD workflow.
+This GitHub Action provides a simple way to run a [pgstac](https://github.com/stac-utils/pgstac) server (with [pypgstac](https://github.com/stac-utils/pgstac/tree/main/pypgstac)) in a Docker container and load STAC data into it as part of your CI/CD workflow.
 
 ## Features
 
-- Pulls and runs the official `stacutils/pgstac` Docker image
+- Pulls and runs the official `ghcr.io/stac-utils/pgstac` Docker image
 - Waits for the database to be ready
 - Runs `pypgstac migrate` to initialize the database
 - Loads all STAC collections and items from a specified directory using `pypgstac load`
@@ -21,13 +21,13 @@ This composite GitHub Action provides a simple way to run a [pgstac](https://git
 ## Usage
 
 1. **Add the action to your repo**  
-   Place the composite action in `.github/actions/pgstac-action.yml`.
+   Place the action in `.github/workflows/pgstac-action.yml`.
 
 2. **Reference it in your workflow:**
 
     ```yaml
     - name: Run pgstac and load STAC data
-      uses: ./.github/actions/pgstac-action
+      uses: ./.github/workflows/pgstac-action
       with:
         db_password: ${{ secrets.DatabasePassword || 'postgres' }}
         stac_data_dir: ${{ github.workspace }}/tests/data
