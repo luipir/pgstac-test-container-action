@@ -1,0 +1,44 @@
+name: "Run pgstac and load STAC data"
+description: "Start pgstac server and load STAC data using pypgstac"
+inputs:
+  db_password:
+    description: "PostgreSQL password"
+    required: true
+  stac_data_dir:
+    description: "Path to directory with STAC data"
+    required: true
+  db_port:
+    description: "Host port for PostgreSQL"
+    required: false
+    default: "5439"
+runs:
+  using: "composite"
+  steps:
+    - name: Pull pgstac Docker image
+      shell: bash
+      run: |
+        docker pull stacutils/pgstac:v0.9.2
+
+    - name: Start pgstac server
+      shell: bash
+      run: |
+        docker run -d \
+          --name pgstac \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD=${{ inputs.db_password }} \
+          -e POSTGRES_DB=postgis \
+          -p ${{ inputs.db_port }}:5432 \
+          stacutils/pgstac:v0.9.2
+
+    - name: Wait for pgstac to be ready
+      shell: bash
+      run: |
+        for i in {1..30}; do
+          docker exec pgstac pg_isready -U postgres && break
+          sleep 2
+        done
+
+    - name: Load STAC data with pypgstac
+      shell: bash
+      run: |
+        ./scripts/load_stac_data.sh ./testdata
