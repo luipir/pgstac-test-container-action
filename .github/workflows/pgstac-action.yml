@@ -9,13 +9,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Docker
+      - name: Install dependencies
         run: |
           apt-get update
+          apt-get install -y python3-pip
+          pip3 install --upgrade pip
           apt-get install -y docker.io
-
-      - name: Pull pgstac Docker image
-        run: docker pull stacutils/pgstac:v0.9.2
 
       - name: Docker login
         if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
@@ -24,7 +23,10 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           echo "${DOCKERHUB_TOKEN}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-      
+
+      - name: Pull pgstac Docker image
+        run: docker pull ghcr.io/stac-utils/pgstac:v0.9.6
+
       - name: Start pgstac server
         run: |
           docker run -d \
@@ -33,7 +35,7 @@ jobs:
             -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }} \
             -e POSTGRES_DB=postgis \
             -p ${{ vars.DB_PORT || 5439 }}:5432 \
-            stacutils/pgstac:v0.9.2
+            ghcr.io/stac-utils/pgstac:v0.9.6
 
       - name: Wait for pgstac to be ready
         run: |
@@ -41,9 +43,6 @@ jobs:
             docker exec pgstac pg_isready -U postgres && break
             sleep 2
           done
-
-      - name: Install pypgstac
-        run: pip install pypgstac
 
       - name: Load STAC data with pypgstac
         env:
