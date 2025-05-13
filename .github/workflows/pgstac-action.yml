@@ -44,6 +44,9 @@ jobs:
             sleep 2
           done
 
+      - name: Ensure load_stac_data.sh is executable
+        run: chmod +x ./scripts/load_stac_data.sh
+
       - name: Load STAC data with pypgstac
         env:
           PGPASSWORD: ${{ secrets.DB_PASSWORD }}
