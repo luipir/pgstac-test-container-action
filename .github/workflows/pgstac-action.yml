@@ -33,7 +33,7 @@ jobs:
           docker run -d \
             --name pgstac \
             -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -e POSTGRES_PASSWORD=postgres \
             -e POSTGRES_DB=postgis \
             -p ${{ vars.DB_PORT || 5439 }}:5432 \
             ghcr.io/stac-utils/pgstac:v0.9.6

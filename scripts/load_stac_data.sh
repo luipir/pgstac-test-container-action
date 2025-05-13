@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-DSN="postgresql://postgres:${PGPASSWORD:-postgres}@localhost:5439/postgis"
+DSN="postgresql://postgres:${PGPASSWORD:-postgres}@localhost:5432/postgis"
 BASE_DATA_DIR="${1:-testdata}"
 
 echo "Migrating pgstac database..."
