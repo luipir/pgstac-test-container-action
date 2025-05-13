@@ -49,10 +49,9 @@ This composite GitHub Action provides a simple way to run a [pgstac](https://git
 .github/
   actions/
     pgstac-action/
-      action.yml
+      pgstac-action.yml
 tests/
   data/
-    stac-catalog.json
     stac-collection.json
     stac-item.json
 .github/workflows/
