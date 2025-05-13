@@ -9,6 +9,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+
       - name: Pull pgstac Docker image
         run: docker pull stacutils/pgstac:v0.9.2
 
