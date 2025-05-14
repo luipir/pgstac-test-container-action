@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -12,7 +12,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-
+      
       - name: Install pip
         run: |
           apt-get install -y python3-pip
@@ -20,7 +20,7 @@ jobs:
 
       - name: Install pypgstac
         run: |
-          pip3 install pypgstac[psycopg]==0.6.13
+          pip3 install pypgstac[psycopg]==0.9.6
 
       - name: Install docker
         run: |
@@ -35,7 +35,7 @@ jobs:
           echo "${DOCKERHUB_TOKEN}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
 
       - name: Pull pgstac Docker image
-        run: docker pull ghcr.io/stac-utils/pgstac:v0.6.13
+        run: docker pull ghcr.io/stac-utils/pgstac:v0.9.6
 
       - name: Start pgstac server
         run: |
@@ -45,7 +45,7 @@ jobs:
             -e POSTGRES_PASSWORD=postgres \
             -e POSTGRES_DB=postgis \
             -p ${{ vars.DB_PORT || 5439 }}:5432 \
-            ghcr.io/stac-utils/pgstac:v0.6.13
+            ghcr.io/stac-utils/pgstac:v0.9.6
 
       - name: Wait for pgstac to be ready
         run: |
