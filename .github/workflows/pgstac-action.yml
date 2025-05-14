@@ -5,6 +5,18 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      PGSTAC_VERSION: ${{ vars.PGSTAC_VERSION || 'v0.9.6' }}
+      DB_PORT: ${{ vars.DB_PORT || 5439 }}
+      HOST_DB_PORT: ${{ vars.DB_PORT || 5432 }}
+      DB_HOST: ${{ vars.DB_HOST || 'localhost' }}
+      DB_NAME: ${{ vars.DB_NAME || 'postgis' }}
+      DB_USER: ${{ vars.DB_USER || 'postgres' }}
+      DB_PASSWORD: ${{ vars.DB_PASSWORD || secrets.DB_PASSWORD || 'postgres'}}
+      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ vars.DOCKERHUB_TOKEN || secrets.DOCKERHUB_TOKEN }}
+      PGPASSWORD: ${{ vars.DB_PASSWORD || secrets.DB_PASSWORD || 'postgres'}}
+      STAC_DATA_DIR: ${{ vars.STAC_DATA_DIR || 'testdata' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +32,7 @@ jobs:
 
       - name: Install pypgstac
         run: |
-          pip3 install pypgstac[psycopg]==0.9.6
+          pip3 install pypgstac[psycopg]==${{ env.PGSTAC_VERSION }}
 
       - name: Install docker
         run: |
@@ -28,24 +40,21 @@ jobs:
 
       - name: Docker login
         if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           echo "${DOCKERHUB_TOKEN}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
 
       - name: Pull pgstac Docker image
-        run: docker pull ghcr.io/stac-utils/pgstac:v0.9.6
+        run: docker pull ghcr.io/stac-utils/pgstac:${{ env.PGSTAC_VERSION }}
 
       - name: Start pgstac server
         run: |
           docker run -d \
             --name pgstac \
-            -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=postgres \
-            -e POSTGRES_DB=postgis \
-            -p ${{ vars.DB_PORT || 5439 }}:5432 \
-            ghcr.io/stac-utils/pgstac:v0.9.6
+            -e POSTGRES_USER=${{ env.DB_USER }} \
+            -e POSTGRES_PASSWORD=${{ env.PGPASSWORD }} \
+            -e POSTGRES_DB=${{ env.DB_NAME }} \
+            -p ${{ env.DB_PORT }}:${{ env.HOST_DB_PORT }} \
+            ghcr.io/stac-utils/pgstac:${{ env.PGSTAC_VERSION }}
 
       - name: Wait for pgstac to be ready
         run: |
@@ -58,7 +67,5 @@ jobs:
         run: chmod +x ./scripts/load_stac_data.sh
 
       - name: Load STAC data with pypgstac
-        env:
-          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          ./scripts/load_stac_data.sh ${{ vars.STAC_DATA_DIR || 'testdata' }}
+          ./scripts/load_stac_data.sh ${{ env.STAC_DATA_DIR }}
