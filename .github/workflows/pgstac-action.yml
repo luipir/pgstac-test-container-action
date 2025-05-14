@@ -20,7 +20,7 @@ jobs:
 
       - name: Install pypgstac
         run: |
-          pip3 install pypgstac[psycopg]==0.9.6
+          pip3 install pypgstac[psycopg]==0.9.4
 
       - name: Install docker
         run: |
@@ -35,7 +35,7 @@ jobs:
           echo "${DOCKERHUB_TOKEN}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
 
       - name: Pull pgstac Docker image
-        run: docker pull ghcr.io/stac-utils/pgstac:v0.9.6
+        run: docker pull ghcr.io/stac-utils/pgstac:v0.9.4
 
       - name: Start pgstac server
         run: |
@@ -45,7 +45,7 @@ jobs:
             -e POSTGRES_PASSWORD=postgres \
             -e POSTGRES_DB=postgis \
             -p ${{ vars.DB_PORT || 5439 }}:5432 \
-            ghcr.io/stac-utils/pgstac:v0.9.6
+            ghcr.io/stac-utils/pgstac:v0.9.4
 
       - name: Wait for pgstac to be ready
         run: |
