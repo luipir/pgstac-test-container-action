@@ -12,9 +12,18 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
+
+      - name: Install pip
+        run: |
           apt-get install -y python3-pip
           pip3 install --upgrade pip
-          pip3 install pypgstac[psycopg]
+
+      - name: Install pypgstac
+        run: |
+          pip3 install pypgstac[psycopg]==0.9.6
+
+      - name: Install docker
+        run: |
           apt-get install -y docker.io
 
       - name: Docker login
